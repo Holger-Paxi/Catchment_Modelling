@@ -1,0 +1,1299 @@
+1         *************************************************
+          *    U.S. Environmental Protection Agency       *
+          *    Storm Water Management Model  (SWMM)       *
+          *       Version 4.40 (Lahey, CDM beta)          *
+          *************************************************
+
+                           Developed by                    
+
+          *************************************************
+          *             Metcalf & Eddy, Inc.              *
+          *            University of Florida              *
+          *       Water Resources Engineers, Inc.         *
+          *     (Now Camp, Dresser and McKee, Inc.)       *
+          *              September 1970                   *
+          *************************************************
+
+                   Distributed and Maintained by           
+
+          *************************************************
+          *      U.S. Environmental Protection Agency     *
+          * Center for Exposure Assessment Modeling (CEAM)*
+          *    Athens Environmental Research Laboratory   *
+          *            960 College Station Road           *
+          *            Athens, GA    30605-2720           *
+          *************************************************
+
+          *************************************************
+          *     This is a new release of SWMM.  If any    *
+          *     problems occur executing this model       *
+          *     system, contact Mr. Frank Stancil,        *
+          *     U.S. Environmental Protection Agency.     *
+          *     706/355-8328 (voice)                      *
+          *     e-mail: stancil@athens.ath.epa.gov        *
+          *     Or contact Wayne C. Huber at Oregon St. U.*
+          *     541/737-6150 or huberw@ccmail.orst.edu    *
+          *     Or Michael F. Schmidt at Camp Dresser &   *
+          *     McKee (904) 281-0170 SCHMIDTMF@CDM.COM    *
+          *************************************************
+
+          *************************************************
+          *  This is an implementation of EPA SWMM 4.40.  *
+          *  "Nature is full of infinite causes which     *
+          *   have never occurred in experience" da Vinci *
+          *************************************************
+
+
+ ###########################################
+ #        File names by SWMM Block         #
+ #         JIN  -> Input to a Block        #
+ #        JOUT  -> Output from a Block     #
+ ###########################################
+
+    JIN for Block #     1 File #    0  JIN.UF                                                      
+   JOUT for Block #     1 File #   31  JOT.UF                                                      
+    JIN for Block #     2 File #   31  JOT.UF                                                      
+   JOUT for Block #     2 File #    0  JOT.UF                                                      
+
+ ###########################################
+ # Scratch file names for this simulation. #
+ ###########################################
+
+ NSCRAT #     1 File #   21  SCRT1.UF                                                    
+ NSCRAT #     2 File #   22  SCRT2.UF                                                    
+ NSCRAT #     3 File #   23  SCRT3.UF                                                    
+ NSCRAT #     4 File #   24  SCRT4.UF                                                    
+ NSCRAT #     5 File #   25  SCRT5.UF                                                    
+ NSCRAT #     6 File #   26  SCRT6.UF                                                    
+
+ ***************************************************
+ *    Parameter Values on the Tapes Common Block   *
+ ***************************************************
+
+  Number of Subcatchments in the Runoff Block (NW)...... 1000
+  Number of Channel/Pipes in the Runoff Block (NG)...... 1000
+  Number of Connections to Runoff Channels/Inlets (NCP).    6
+  Number of Runoff Water Quality Constituents (NRQ).....   10
+  Number of Runoff Land Uses per Subcatchment (NLU).....   10
+  Number of Groundwater Subcatchments in Runoff (NGW)...  100
+  Number of Interface Locations for all Blocks (NIE).... 1000
+  Number of Elements in the Transport Block (NET).......  300
+  Number of Storage Junctions in Transport (NTSE).......  100
+  Number of Input Hydrographs in Transport (NTH)........   80
+  Number of Tabular Flow Splitters in Transport (NTSP)..   50
+  Number of Elements in the Extran Block (NEE).......... 1400
+  Number of Pumps in Extran (NEP).......................   75
+  Number of Orifices in Extran (NEO)....................  200
+  Number of Tide Gates/Free Outfalls in Extran (NTG)....  200
+  Number of Extran Weirs (NEW)..........................   60
+  Number of Extran Printout Locations (NPO).............   30
+  Number of Tide Elements in Extran (NTE)...............   20
+  Number of Natural Channels (NNC)......................  200
+  Number of Storage Junctions in Extran (NVSE)..........  300
+  Number of Time History Data Points in Extran (NTVAL)..  500
+  Number of Data Points for Variable Storage Elements
+    in the Extran Block (NVST)..........................   25
+  Number of Input Hydrographs in Extran (NEH)...........  400
+  Number of Allowable Channel Connections to
+    Junctions in the Extran Block (NCHN)................   15
+  Number Rain Gages in Rain and Runoff (MAXRG)..........  200
+  Number PRATE/VRATE Points for Extran Pump
+    Input (MAXPRA)......................................   10
+  Number of Variable Orifices in Extran (NVORF).........   50
+  Number of Variable Orifice Data Points (NVOTIM).......   50
+  Number of Allowable Precip. Values/yr in Rain (LIMRN). 5000
+  Number of Storm Events for Rain Analysis (LSTORM)..... 5000
+  Number of Plugs for Plug-flow in S/T (NPLUG).......... 3000
+  Number Conduits for Extran Results to ASCII 
+    File (MXFLOW).......................................  150
+
+
+
+ ###################################################
+ # Entry made to the Runoff Block, last updated by #
+ # Oregon State University, CDM, and XP Software,  #
+ # July 1997.                                      #
+ ###################################################
+ # "And wherever water goes, amoebae go along for  #
+ #  the ride"                      Tom Robbins     #
+ ###################################################
+
+
+
+                    APPLICATION OF STORM WATER MANAGEMENT MODEL (SWMM)                              
+
+                    POWELLS CREEK SIMULATION                                                        
+
+
+
+ Snowmelt parameter - ISNOW.......................        0
+
+ Number of rain gages - NRGAG.....................        1
+
+ Horton infiltration equation used - INFILM.......        0
+
+ Quality is not simulated - KWALTY................        0
+
+ Default evaporation rate used - IVAP.............        0
+
+ Hour of day at start of storm - NHR..............        3
+
+ Minute of hour at start of storm - NMN...........        0
+
+ Time TZERO at start of storm (hours).............    3.000
+
+ Use Metric units for I/O - METRIC................        1
+  ===> Ft-sec units used in all internal computations
+
+ Runoff input print control...                            0
+
+ Runoff graph plot control....                            0
+
+ Runoff output print control..                            2
+
+ Limit number of groundwater convergence messages to 10000 (if simulated)
+
+ Month, day, year of start of storm is:             4/23/89
+
+ Wet time step length (seconds).......                  15.
+
+ Dry time step length (seconds).......                 240.
+
+ Wet/Dry time step length (seconds)...                 120.
+
+ Simulation length is......                          1200.0 Minutes  
+
+ Percent of impervious area with zero detention depth  25.0
+
+ Horton infiltration model being used
+ Rate for   regeneration of infiltration = REGEN * DECAY
+ DECAY is read in for each subcatchment
+ REGEN = ........................................   0.01000
+1
+
+
+ Rainfall from E3 Data Group 
+
+ KTYPE  - Rainfall input type..............        0
+ NHISTO - Total number of rainfall values..      330
+ KINC   - Rainfall values (pairs) per line.       10
+ KPRINT - Print rainfall (0-Yes,1-No)......        0
+ KTIME  - Precipitation time units         
+    0 --> Minutes  1 --> Hours.............        0
+ KPREP  - Precipitation unit type          
+    0 --> Intensity  1 --> Volume..........        0
+ KTHIS - Variable rainfall intervals       
+    0 --> No, > 1 --> Yes..................        0
+ THISTO - Rainfall time interval...........     2.00
+ TZRAIN - Starting time (KTIME units)......   180.00
+
+
+    Rainfall printout for gage number....     1
+  Time(mn)/Rain(mm/hr) Time(mn)/Rain(mm/hr) Time(mn)/Rain(mm/hr) Time(mn)/Rain(mm/hr) Time(mn)/Rain(mm/hr)
+      0.00/     0.0000     2.00/     0.0000     4.00/     0.0000     6.00/     0.0000     8.00/     2.3000
+     10.00/     0.0000    12.00/     0.0000    14.00/     0.0000    16.00/     0.0000    18.00/     0.0000
+     20.00/     0.0000    22.00/     0.0000    24.00/     0.5000    26.00/    65.0000    28.00/     0.0000
+     30.00/     5.5000    32.00/     0.0000    34.00/     0.0000    36.00/     0.0000    38.00/     0.0000
+     40.00/     0.0000    42.00/     0.0000    44.00/     0.0000    46.00/     0.0000    48.00/     0.0000
+     50.00/     0.0000    52.00/     0.0000    54.00/     0.0000    56.00/     1.5000    58.00/     0.0000
+     60.00/     0.0000    62.00/     0.0000    64.00/     0.0000    66.00/     0.0000    68.00/     0.0000
+     70.00/     0.0000    72.00/     0.0000    74.00/     0.0000    76.00/     0.0000    78.00/     3.8000
+     80.00/     0.0000    82.00/     0.0000    84.00/     0.0000    86.00/     0.0000    88.00/     0.0000
+     90.00/     0.0000    92.00/     0.0000    94.00/     0.0000    96.00/     0.0000    98.00/     0.0000
+    100.00/     0.0000   102.00/     0.0000   104.00/     0.0000   106.00/     0.0000   108.00/     0.0000
+    110.00/     0.0000   112.00/     0.0000   114.00/     0.0000   116.00/     0.0000   118.00/     0.0000
+    120.00/     0.0000   122.00/     0.0000   124.00/     0.0000   126.00/     0.0000   128.00/     0.0000
+    130.00/     0.0000   132.00/     0.0000   134.00/     0.9000   136.00/     0.0000   138.00/     7.1000
+    140.00/     0.0000   142.00/     0.0000   144.00/     0.0000   146.00/     0.0000   148.00/     1.7000
+    150.00/     0.0000   152.00/     0.0000   154.00/     0.0000   156.00/     0.0000   158.00/     0.0000
+    160.00/     0.0000   162.00/     0.0000   164.00/     0.0000   166.00/     0.0000   168.00/     0.0000
+    170.00/     0.0000   172.00/     0.0000   174.00/     0.0000   176.00/     0.0000   178.00/     0.0000
+    180.00/     0.0000   182.00/     0.0000   184.00/     1.4000   186.00/     0.0000   188.00/     0.0000
+    190.00/     0.4000   192.00/     0.0000   194.00/     0.0000   196.00/     3.1000   198.00/     0.0000
+    200.00/     0.0000   202.00/     0.0000   204.00/     0.0000   206.00/     0.0000   208.00/     0.0000
+    210.00/     0.0000   212.00/     0.0000   214.00/     0.0000   216.00/     0.0000   218.00/     0.0000
+    220.00/     0.0000   222.00/     0.0000   224.00/     0.0000   226.00/     0.0000   228.00/     0.0000
+    230.00/     0.0000   232.00/     0.0000   234.00/     0.0000   236.00/     0.0000   238.00/     0.0000
+    240.00/     0.6000   242.00/    12.3000   244.00/     0.0000   246.00/     4.9000   248.00/     0.0000
+    250.00/     1.5000   252.00/     0.0000   254.00/     6.8000   256.00/     0.0000   258.00/     0.0000
+    260.00/     0.0000   262.00/     6.2000   264.00/     0.0000   266.00/     0.0000   268.00/     0.0000
+    270.00/     2.2000   272.00/     0.0000   274.00/     0.0000   276.00/     0.0000   278.00/     1.6000
+    280.00/    11.2000   282.00/     3.6000   284.00/     0.0000   286.00/     2.4000   288.00/     0.0000
+    290.00/     0.0000   292.00/     0.0000   294.00/     0.0000   296.00/     0.0000   298.00/     0.0000
+    300.00/     0.0000   302.00/     1.2000   304.00/     0.0000   306.00/     0.0000   308.00/     2.3000
+    310.00/     2.6000   312.00/     0.0000   314.00/     6.2000   316.00/     6.9000   318.00/     4.3000
+    320.00/     0.0000   322.00/     0.0000   324.00/     2.4000   326.00/     0.0000   328.00/     0.0000
+    330.00/     0.0000   332.00/     0.0000   334.00/     0.0000   336.00/     1.7000   338.00/     1.0000
+    340.00/     0.0000   342.00/     9.5000   344.00/     0.0000   346.00/     1.9000   348.00/     0.0000
+    350.00/     0.0000   352.00/     1.0000   354.00/     0.0000   356.00/     0.0000   358.00/     0.1000
+    360.00/     2.2000   362.00/     0.0000   364.00/     2.4000   366.00/     0.0000   368.00/     0.0000
+    370.00/     0.5000   372.00/     0.0000   374.00/     2.0000   376.00/     0.0000   378.00/     0.0000
+    380.00/     3.3000   382.00/     2.2000   384.00/     0.0000   386.00/     0.0000   388.00/     0.0000
+    390.00/     9.5000   392.00/     0.8000   394.00/     0.0000   396.00/     7.5000   398.00/     0.0000
+    400.00/     0.0000   402.00/     0.0000   404.00/     2.7000   406.00/     0.0000   408.00/     4.4000
+    410.00/     0.0000   412.00/     0.0000   414.00/     0.0000   416.00/     0.0000   418.00/     0.0000
+    420.00/    10.8000   422.00/     0.6000   424.00/    14.5000   426.00/     0.0000   428.00/    12.1000
+    430.00/    36.9000   432.00/    25.7000   434.00/    37.0000   436.00/     0.0000   438.00/    30.4000
+    440.00/     0.0000   442.00/     0.0000   444.00/    23.9000   446.00/     0.0000   448.00/    50.0000
+    450.00/    11.9000   452.00/     4.0000   454.00/    12.4000   456.00/    37.9000   458.00/    20.7000
+    460.00/     0.0000   462.00/     0.0000   464.00/     4.4000   466.00/     0.0000   468.00/     1.9000
+    470.00/     3.1000   472.00/     0.0000   474.00/     4.6000   476.00/     0.0000   478.00/     4.5000
+    480.00/     0.0000   482.00/     0.0000   484.00/     4.0000   486.00/     0.0000   488.00/     0.0000
+    490.00/     5.3000   492.00/     0.0000   494.00/     7.3000   496.00/     9.7000   498.00/     0.0000
+    500.00/     0.0000   502.00/     7.0000   504.00/     0.0000   506.00/     5.6000   508.00/     9.9000
+    510.00/     0.0000   512.00/     9.2000   514.00/     0.0000   516.00/     0.0000   518.00/     5.8000
+    520.00/     8.0000   522.00/     0.0000   524.00/     2.8000   526.00/     0.0000   528.00/     0.0000
+    530.00/     0.0000   532.00/     1.1000   534.00/     0.0000   536.00/     0.0000   538.00/     3.6000
+    540.00/     0.0000   542.00/     1.6000   544.00/     0.0000   546.00/     0.0000   548.00/     0.0000
+    550.00/     0.0000   552.00/     0.0000   554.00/     0.0000   556.00/     0.0000   558.00/     0.0000
+    560.00/     0.0000   562.00/     0.0000   564.00/     0.0000   566.00/     0.0000   568.00/     0.0000
+    570.00/     0.0000   572.00/     0.0000   574.00/     0.0000   576.00/     0.0000   578.00/     0.0000
+    580.00/     0.0000   582.00/     0.0000   584.00/     0.0000   586.00/     0.0000   588.00/     0.0000
+    590.00/     0.0000   592.00/     0.0000   594.00/     1.5000   596.00/     0.0000   598.00/     0.0000
+    600.00/     0.0000   602.00/     0.0000   604.00/     0.0000   606.00/     0.0000   608.00/     0.0000
+    610.00/     0.0000   612.00/     0.6000   614.00/     0.0000   616.00/     0.0000   618.00/     0.0000
+    620.00/     0.0000   622.00/     0.0000   624.00/     0.0000   626.00/     0.0000   628.00/     0.0000
+    630.00/     0.0000   632.00/     0.0000   634.00/     0.0000   636.00/     0.0000   638.00/     0.0000
+    640.00/     0.0000   642.00/     0.0000   644.00/     0.0000   646.00/     0.8000   648.00/     0.0000
+    650.00/     0.0000   652.00/     0.0000   654.00/     7.2000   656.00/     0.0000   658.00/     2.4000
+
+
+**************************************
+* Rainfall input summary from Runoff *
+**************************************
+
+ Total rainfall for gage #     1 is   22.1933 mm
+
+   #############################
+   #        Data Group F1      #
+   # Evaporation Rate (mm/day) #
+   #############################
+
+  JAN.  FEB.  MAR.  APR.  MAY   JUN.  JUL.  AUG.  SEP.  OCT.  NOV.  DEC.
+  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----
+  3.00  3.00  3.00  3.00  3.00  3.00  3.00  3.00  3.00  3.00  3.00  3.00
+
+1
+ *********************************************************
+ *         C H A N N E L  A N D  P I P E  D A T A        *
+ *********************************************************
+
+ Input   NAMEG:  Drains                           Invert  L Side   R Side  Intial     Max  Mann-   Full
+Sequen  Channel   to     Channel  Width  Length    Slope   Slope    Slope   Depth   Depth   ings   Flow
+Number    ID #   NGTO:    Type     (m)    (m)     (m/m)   (m/m)    (m/m)     (m)     (m)    "N"   (cms)
+------  --------------- -------- ------ -------   ------- -------- ------- ------- ------- -----  -----
+   1       101     102  Circular   0.8   114.7    0.0168   0.0000  0.0000     0.0     0.0  0.0100 2.10E+00
+   2       401     102  Circular   0.6    25.1    0.0308   0.0000  0.0000     0.0     0.0  0.0100 1.57E+00
+   3       102     103  Circular   0.8    34.2    0.0308   0.0000  0.0000     0.0     0.0  0.0100 2.85E+00
+   4       103     104  Circular   0.9    60.4    0.0133   0.0000  0.0000     0.0     0.0  0.0100 3.04E+00
+   5       104     105  Circular   0.9   144.4    0.0118   0.0000  0.0000     0.0     0.0  0.0100 2.87E+00
+   6       105     106  Circular   1.1   100.6    0.0167   0.0000  0.0000     0.0     0.0  0.0100 5.15E+00
+   7       106     107  Circular   1.2    30.2    0.0093   0.0000  0.0000     0.0     0.0  0.0100 5.48E+00
+   8       107     108  Circular   1.2    62.4    0.0100   0.0000  0.0000     0.0     0.0  0.0100 5.68E+00
+   9       301     302  Circular   0.5   116.9    0.0313   0.0000  0.0000     0.0     0.0  0.0100 7.35E-01
+  10       302     303  Circular   0.5   100.5    0.0286   0.0000  0.0000     0.0     0.0  0.0100 1.06E+00
+  11       501     303  Circular   0.5    59.4    0.0217   0.0000  0.0000     0.0     0.0  0.0100 9.22E-01
+  12       303     304  Circular   0.8   189.1    0.0189   0.0000  0.0000     0.0     0.0  0.0100 2.23E+00
+  13       304     305  Circular   0.8    45.3    0.0081   0.0000  0.0000     0.0     0.0  0.0100 1.46E+00
+  14       305     108  Circular   0.9    62.4    0.0167   0.0000  0.0000     0.0     0.0  0.0100 3.41E+00
+  15       108     109  Circular   1.5   146.9    0.0083   0.0000  0.0000     0.0     0.0  0.0100 9.39E+00
+  16       109     110  Circular   1.7   152.9    0.0083   0.0000  0.0000     0.0     0.0  0.0100 1.21E+01
+  17       110     111  Circular   1.9   213.6    0.0061   0.0000  0.0000     0.0     0.0  0.0100 1.38E+01
+  18       601     602  Circular   0.8   222.3    0.0167   0.0000  0.0000     0.0     0.0  0.0100 2.70E+00
+  19       602     603  Circular   1.0    55.9    0.0112   0.0000  0.0000     0.0     0.0  0.0100 3.70E+00
+  20       603     111  Circular   1.0    40.2    0.0431   0.0000  0.0000     0.0     0.0  0.0100 7.26E+00
+  21       111     112  Circular   1.9   144.8    0.0097   0.0000  0.0000     0.0     0.0  0.0100 1.74E+01
+  22       112     113  Circular   1.9   155.4    0.0097   0.0000  0.0000     0.0     0.0  0.0100 1.84E+01
+  23       701     113  Circular   0.5    47.8    0.0549   0.0000  0.0000     0.0     0.0  0.0100 1.47E+00
+  24       113     114  Circular   2.1   106.1    0.0068   0.0000  0.0000     0.0     0.0  0.0100 2.09E+01
+  25       114     115  Circular   2.2   307.2    0.0068   0.0000  0.0000     0.0     0.0  0.0100 2.29E+01
+  26       115     116  Circular   2.3    67.0    0.0068   0.0000  0.0000     0.0     0.0  0.0100 2.51E+01
+  27       201     202  Circular   0.8   144.0    0.0143   0.0000  0.0000     0.0     0.0  0.0100 2.50E+00
+  28       202     203  Circular   0.8    72.8    0.0323   0.0000  0.0000     0.0     0.0  0.0100 3.76E+00
+  29       203     204  Circular   0.9    60.8    0.0111   0.0000  0.0000     0.0     0.0  0.0100 2.78E+00
+  30       801     204  Circular   0.8   145.0    0.0200   0.0000  0.0000     0.0     0.0  0.0100 2.30E+00
+  31       204     205  Circular   1.1    93.5    0.0111   0.0000  0.0000     0.0     0.0  0.0100 5.04E+00
+  32       205     206  Circular   1.2   240.0    0.0111   0.0000  0.0000     0.0     0.0  0.0100 5.99E+00
+  33       206     207  Circular   1.4   161.1    0.0105   0.0000  0.0000     0.0     0.0  0.0100 7.98E+00
+  34       207     208  Circular   1.5   258.3    0.0071   0.0000  0.0000     0.0     0.0  0.0100 8.69E+00
+  35       208     209  Circular   1.7    48.7    0.0142   0.0000  0.0000     0.0     0.0  0.0100 1.58E+01
+  36       209     116  Circular   1.7    50.9    0.0040   0.0000  0.0000     0.0     0.0  0.0100 8.40E+00
+  37       116     117 Trapezoid   3.2    40.2    0.0076   0.0500  0.0500     0.0     2.0  0.0100 5.43E+01
+  38       117     118 Trapezoid   3.2   111.8    0.0036   0.0500  0.0500     0.0     2.0  0.0100 3.74E+01
+1
+
+  ***************************************************
+  *          S U B C A T C H M E N T  D A T A       *
+  ***************************************************
+
+ SUBCATCH-  CHANNEL  WIDTH   AREA   PERCENT    SLOPE    RESISTANCE FACTOR  DEPRES. STORAGE(MM)    INFILTRATION  DECAY RATE  GAGE
+ MENT NO.  OR INLET   (M)    (HA)   IMPERV.   (M/M)      IMPERV.    PERV.    IMPERV.    PERV.      RATE(MM/HR)    (1/SEC)    NO.
+                                                                                                MAXIMUM MINIMUM
+ ---  ---   ----    ------   ------  -----   -------     ------    ------    ------    ------     ----   -------  -------  ------
+   1 1001    101    300.00     8.46  58.00    0.0350      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   2 4001    401    230.00     5.87  58.00    0.0450      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   3 1002    102    100.00     5.87  58.00    0.0480      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   4 1003    103    240.00     4.25  58.00    0.0450      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   5 1004    104    500.00    12.22  58.00    0.0400      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   6 1005    105    250.00     8.42  58.00    0.0500      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   7 1006    106      0.00     0.01  58.00    0.0000      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   8 1007    107    220.00     3.04  58.00    0.0500      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+   9 3001    301    250.00     3.44  58.00    0.0450      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  10 3002    302    100.00     0.93  58.00    0.0350      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  11 5001    501    300.00     7.69  58.00    0.0650      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  12 3003    303    300.00     6.15  58.00    0.0500      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  13 3004    304    120.00     1.25  58.00    0.0310      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  14 3005    305    300.00     2.06  58.00    0.0520      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  15 1008    108    130.00     0.65  58.00    0.0240      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  16 1009    109    400.00    10.36  58.00    0.0550      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  17 1010    110    450.00    14.65  58.00    0.0400      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  18 6001    601    700.00    23.35  58.00    0.0480      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  19 6002    602      0.00     0.01  58.00    0.0000      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  20 6003    603      0.00     0.01  58.00    0.0000      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  21 1011    111    330.00     1.74  58.00    0.0160      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  22 1012    112    300.00     5.67  58.00    0.0250      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  23 7001    701    450.00    10.52  58.00    0.0350      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  24 1013    113    250.00     7.28  58.00    0.0420      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  25 1014    114    260.00     5.67  58.00    0.0250      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  26 1015    115    100.00     0.81  58.00    0.0108      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  27 2001    201    500.00    23.55  58.00    0.0500      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  28 2002    202    350.00     1.86  58.00    0.0660      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  29 2003    203      0.00     0.01  58.00    0.0000      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  30 8001    801    450.00    15.99  58.00    0.0500      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  31 2004    204    400.00     5.14  58.00    0.0420      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  32 2005    205    300.00     5.38  58.00    0.0300      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  33 2006    206    700.00    18.78  58.00    0.0300      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  34 2007    207    600.00    11.57  58.00    0.0300      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  35 2008    208     80.00     0.65  58.00    0.0320      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  36 2009    209      0.00     0.01  58.00    0.0000      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  37 1016    116    400.00     3.27  58.00    0.0300      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+  38 1017    117      0.00     0.01  58.00    0.0540      0.012     0.050     1.500    10.500   162.50    9.50    0.00056     1
+
+ TOTAL NUMBER OF SUBCATCHMENTS...             38
+ TOTAL TRIBUTARY AREA (HECTARES).         236.60
+ IMPERVIOUS AREA (HECTARES)......         137.23
+ PERVIOUS AREA (HECTARES)........          99.37
+ TOTAL WIDTH (METERS)............       10360.00
+ PERCENT IMPERVIOUSNESS..........          58.00
+
+1
+ *********************************************************
+ *     Arrangement of Subcatchments and Channel/Pipes    *
+ *********************************************************
+
+
+    Channel
+    or Pipe
+        101     No Tributary Channel/Pipes
+                Tributary Subareas........  1001
+        401     No Tributary Channel/Pipes
+                Tributary Subareas........  4001
+        102     Tributary Channel/Pipes...   101   401
+                Tributary Subareas........  1002
+        103     Tributary Channel/Pipes...   102
+                Tributary Subareas........  1003
+        104     Tributary Channel/Pipes...   103
+                Tributary Subareas........  1004
+        105     Tributary Channel/Pipes...   104
+                Tributary Subareas........  1005
+        106     Tributary Channel/Pipes...   105
+                Tributary Subareas........  1006
+        107     Tributary Channel/Pipes...   106
+                Tributary Subareas........  1007
+        301     No Tributary Channel/Pipes
+                Tributary Subareas........  3001
+        302     Tributary Channel/Pipes...   301
+                Tributary Subareas........  3002
+        501     No Tributary Channel/Pipes
+                Tributary Subareas........  5001
+        303     Tributary Channel/Pipes...   302   501
+                Tributary Subareas........  3003
+        304     Tributary Channel/Pipes...   303
+                Tributary Subareas........  3004
+        305     Tributary Channel/Pipes...   304
+                Tributary Subareas........  3005
+        108     Tributary Channel/Pipes...   107   305
+                Tributary Subareas........  1008
+        109     Tributary Channel/Pipes...   108
+                Tributary Subareas........  1009
+        110     Tributary Channel/Pipes...   109
+                Tributary Subareas........  1010
+        601     No Tributary Channel/Pipes
+                Tributary Subareas........  6001
+        602     Tributary Channel/Pipes...   601
+                Tributary Subareas........  6002
+        603     Tributary Channel/Pipes...   602
+                Tributary Subareas........  6003
+        111     Tributary Channel/Pipes...   110   603
+                Tributary Subareas........  1011
+        112     Tributary Channel/Pipes...   111
+                Tributary Subareas........  1012
+        701     No Tributary Channel/Pipes
+                Tributary Subareas........  7001
+        113     Tributary Channel/Pipes...   112   701
+                Tributary Subareas........  1013
+
+1
+ *********************************************************
+ *     Arrangement of Subcatchments and Channel/Pipes    *
+ *********************************************************
+
+
+    Channel
+    or Pipe
+        114     Tributary Channel/Pipes...   113
+                Tributary Subareas........  1014
+        115     Tributary Channel/Pipes...   114
+                Tributary Subareas........  1015
+        201     No Tributary Channel/Pipes
+                Tributary Subareas........  2001
+        202     Tributary Channel/Pipes...   201
+                Tributary Subareas........  2002
+        203     Tributary Channel/Pipes...   202
+                Tributary Subareas........  2003
+        801     No Tributary Channel/Pipes
+                Tributary Subareas........  8001
+        204     Tributary Channel/Pipes...   203   801
+                Tributary Subareas........  2004
+        205     Tributary Channel/Pipes...   204
+                Tributary Subareas........  2005
+        206     Tributary Channel/Pipes...   205
+                Tributary Subareas........  2006
+        207     Tributary Channel/Pipes...   206
+                Tributary Subareas........  2007
+        208     Tributary Channel/Pipes...   207
+                Tributary Subareas........  2008
+        209     Tributary Channel/Pipes...   208
+                Tributary Subareas........  2009
+        116     Tributary Channel/Pipes...   115   209
+                Tributary Subareas........  1016
+        117     Tributary Channel/Pipes...   116
+                Tributary Subareas........  1017
+
+
+     INLET
+        118     Tributary Channel/Pipes...   117
+                No Tributary Subareas.....
+
+
+ ***********************************************************
+ * Hydrographs will be stored for the following   1 INLETS *
+ ***********************************************************
+            118
+
+
+ ************************************************
+ *  Quality simulation not included in this run *
+ ************************************************
+
+
+
+     ***********************
+     *    DATA GROUP M1    *
+     ***********************
+
+
+ TOTAL NUMBER OF PRINTED GUTTERS/INLETS...NPRNT..        1
+ NUMBER OF TIME STEPS BETWEEN PRINTINGS..INTERV..       20
+ STARTING AND STOPPING PRINTOUT DATES............        0        0
+
+
+     ***********************
+     *    DATA GROUP M3    *
+     ***********************
+
+ CHANNEL/INLET PRINT DATA GROUPS......    118
+ 
+
+
+ ***************************************************
+ *  Precipitation Interface File Summary           *
+ *  Number of precipitation station....        1   *
+ ***************************************************
+
+ Location Station Number
+ -------- --------------
+        1.             1
+
+
+1
+ ***********************************************
+ * Summary of Quantity and Quality results for *
+ *           April      1989                   *
+ ***********************************************
+
+ Day  Inlet Rain     Flow
+             mm       mm 
+  ---- ---  ----   --------
+  23   118    22.19  11.349
+Total  118    22.19  11.349
+ Year  118    22.19  11.349
+
+ ************************************************
+ *      End of time step DO-loop in Runoff      *
+ ************************************************
+
+ Final Date (Mo/Day/Year)   =                     4/23/89
+ Total number of time steps =                        2910
+ Final Julian Date  =                               89113
+ Final time of day  =                              82800. seconds.
+ Final time of day  =                               23.00   hours.
+ Final running time =                             23.0000   hours.
+ Final running time =                              0.9583    days.
+
+ **************************************************
+ *     Extrapolation Summary for Watersheds       *
+ * # Steps ==> Total Number of Extrapolated Steps *
+ * # Calls ==> Total Number of OVERLND Calls      *
+ **************************************************
+
+  Subcatch   # Steps   # Calls  Subcatch   # Steps   # Calls  Subcatch   # Steps   # Calls
+  --------   -------   -------  --------   -------   -------  --------   -------   -------
+      1001     15645      5215      4001     15621      5207      1002     15723      5241
+      1003     15174      5054      1004     15621      5207      1005     15645      5215
+      1006     23597      5679      1007     14712      4892      3001     14803      4925
+      3002     14305      4739      5001     15413      5135      3003     15303      5093
+      3004     14625      4863      3005     13826      4378      1008     13938      4426
+      1009     15525      5175      1010     15651      5217      6001     15645      5215
+      6002     23597      5679      6003     23597      5679      1011     14098      4606
+      1012     15615      5205      7001     15621      5207      1013     15639      5213
+      1014     15633      5211      1015     15086      5018      2001     15687      5229
+      2002     13528      4156      2003     23597      5679      8001     15651      5217
+      2004     14735      4901      2005     15444      5148      2006     15645      5215
+      2007     15534      5178      2008     14198      4670      2009     23597      5679
+      1016     14229      4699      1017     23597      5679
+
+ **************************************************
+ *     Extrapolation Summary for Channel/Pipes    *
+ * # Steps ==> Total Number of Extrapolated Steps *
+ * # Calls ==> Total Number of GUTNR Calls        *
+ **************************************************
+
+ Chan/Pipe   # Steps   # Calls Chan/Pipe   # Steps   # Calls Chan/Pipe   # Steps   # Calls
+  --------   -------   -------  --------   -------   -------  --------   -------   -------
+       101      8075      2653       401      9560      2644       102      9314      2662
+       103      8384      2664       104      8133      2671       105      8215      2673
+       106      8866      2602       107      8414      2678       301      7771      2537
+       302      7953      2571       501      8206      2618       303      8061      2655
+       304      8472      2656       305      8399      2657       108      8375      2689
+       109      8242      2698       110      8294      2718       601      8025      2663
+       602      8071      2593       603      8876      2592       111      8435      2721
+       112      8457      2727       701      8959      2645       113      8482      2734
+       114      8518      2762       115      8797      2763       201      8068      2664
+       202      8440      2664       203      8088      2596       801      8069      2655
+       204      8216      2672       205      8189      2691       206      8202      2698
+       207      8228      2720       208      8967      2721       209      8242      2650
+       116      9569      2775       117      8338      2726
+1
+ **********************************************
+ *       Continuity Check for Surface Water   *
+ **********************************************
+                                                                     Millimeters over
+                                                       cubic meters  Total Basin
+ Total Precipitation (Rain plus Snow)                 5.250828E+04     22.193
+ Total Infiltration                                   2.169823E+04      9.171
+ Total Evaporation                                    3.424555E+03      1.447
+ Surface Runoff from Watersheds                       2.682146E+04     11.336
+ Total Water remaining in Surface Storage             5.468154E+02      0.231
+ Infiltration over the Pervious Area...               2.169823E+04     21.836
+                       --------        
+ Infiltration + Evaporation + 
+ Surface Runoff + Snow removal +
+ Water remaining in Surface Storage +
+ Water remaining in Snow Cover.........               5.249105E+04     22.186
+ Total Precipitation + Initial Storage.               5.250828E+04     22.193
+
+
+ The error in continuity is calculated as
+ ***************************************
+ * Precipitation + Initial Snow Cover  *
+ *      - Infiltration -               *
+ *Evaporation - Snow removal -         *
+ *Surface Runoff from Watersheds -     *
+ *Water in Surface Storage -           *
+ *Water remaining in Snow Cover        *
+ *-------------------------------------*
+ * Precipitation + Initial Snow Cover  *
+ ***************************************
+ Error..................................        0.033 Percent
+
+
+ **********************************************
+ *       Continuity Check for Channel/Pipes   *
+ **********************************************
+                                                                     Millimeters over
+                                                       cubic meters  Total Basin
+ Initial Channel/Pipe Storage................         0.000000E+00      0.000
+ Final Channel/Pipe Storage..................         0.000000E+00      0.000
+ Surface Runoff from Watersheds..............         2.682146E+04     11.336
+ Groundwater Subsurface Inflow...............         0.000000E+00      0.000
+ Evaporation Loss from Channels..............         1.014796E+00      0.000
+ Channel/Pipe/Inlet Outflow..................         2.685027E+04     11.349
+ Initial Storage + Inflow....................         2.682146E+04     11.336
+ Final Storage + Outflow.....................         2.685128E+04     11.349
+ ********************************************
+ * Final Storage + Outflow + Evaporation  - *
+ * Watershed Runoff - Groundwater Inflow  - *
+ *     Initial Channel/Pipe Storage         *
+ *     ----------------------------------   *
+ *  Final Storage + Outflow  + Evaporation  *
+ ********************************************
+ Error.......................................      0.111 Percent
+1
+
+                                   SUMMARY STATISTICS FOR SUBCATCHMENTS
+                                   ====================================
+
+                                                   PERVIOUS AREA     IMPERVIOUS AREA     TOTAL SUBCATCHMENT AREA 
+                                                -------------------  -----------------  -------------------------
+                                      TOTAL     TOTAL         PEAK              PEAK               PEAK     PEAK
+             GUTTER                 SIMULATED   RUNOFF TOTAL RUNOFF   RUNOFF   RUNOFF      RUNOFF  RUNOFF   UNIT 
+ SUBCATCH-  OR INLET  AREA  PERCENT  RAINFALL   DEPTH LOSSES  RATE     DEPTH    RATE        DEPTH   RATE    RUNOFF
+ MENT NO.     NO.     (HA)   IMPER.   (MM)      (MM)   (MM)   (CMS)     (MM)   (CMS)        (MM)   (CMS)   (MM/HR)
+--------------------------------------------------------------------------------------------------------------------
+     1001      101    8.46    58.0   22.19     0.000  22.193    0.00   19.539     0.31    11.333     0.31   13.307
+     4001      401    5.87    58.0   22.19     0.000  22.193    0.00   19.555     0.23    11.342     0.23   14.489
+     1002      102    5.87    58.0   22.19     0.000  22.193    0.00   19.484     0.19    11.301     0.19   11.470
+     1003      103    4.25    58.0   22.19     0.000  22.193    0.00   19.582     0.19    11.358     0.19   16.257
+     1004      104   12.22    58.0   22.19     0.000  22.193    0.00   19.554     0.49    11.341     0.49   14.409
+     1005      105    8.42    58.0   22.19     0.000  22.193    0.00   19.539     0.31    11.333     0.31   13.311
+     1006      106    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+     1007      107    3.04    58.0   22.19     0.000  22.193    0.00   19.606     0.15    11.372     0.15   17.501
+     3001      301    3.44    58.0   22.19     0.000  22.193    0.00   19.602     0.16    11.369     0.16   17.315
+     3002      302    0.93    58.0   22.19     0.000  22.193    0.00   19.624     0.05    11.382     0.05   18.259
+     5001      501    7.69    58.0   22.19     0.000  22.193    0.00   19.569     0.33    11.350     0.33   15.386
+     3003      303    6.15    58.0   22.19     0.000  22.193    0.00   19.576     0.27    11.354     0.27   15.827
+     3004      304    1.25    58.0   22.19     0.000  22.193    0.00   19.610     0.06    11.374     0.06   17.662
+     3005      305    2.06    58.0   22.19     0.000  22.193    0.00   19.660     0.12    11.403     0.12   20.668
+     1008      108    0.65    58.0   22.19     0.000  22.193    0.00   19.655     0.04    11.400     0.04   20.141
+     1009      109   10.36    58.0   22.19     0.000  22.193    0.00   19.562     0.43    11.346     0.43   14.923
+     1010      110   14.65    58.0   22.19     0.000  22.193    0.00   19.533     0.52    11.329     0.52   12.896
+     6001      601   23.35    58.0   22.19     0.000  22.193    0.00   19.538     0.85    11.332     0.85   13.253
+     6002      602    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+     6003      603    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+     1011      111    1.74    58.0   22.19     0.000  22.193    0.00   19.637     0.09    11.389     0.09   18.784
+     1012      112    5.67    58.0   22.19     0.000  22.193    0.00   19.556     0.23    11.342     0.23   14.522
+     7001      701   10.52    58.0   22.19     0.000  22.193    0.00   19.552     0.41    11.340     0.41   14.293
+     1013      113    7.28    58.0   22.19     0.000  22.193    0.00   19.543     0.27    11.335     0.27   13.621
+     1014      114    5.67    58.0   22.19     0.000  22.193    0.00   19.546     0.22    11.336     0.22   13.778
+     1015      115    0.81    58.0   22.19     0.000  22.193    0.00   19.588     0.04    11.361     0.04   16.559
+     2001      201   23.55    58.0   22.19     0.000  22.193    0.00   19.510     0.77    11.316     0.77   11.845
+     2002      202    1.86    58.0   22.19     0.000  22.193    0.00   19.686     0.12    11.418     0.12   23.526
+     2003      203    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+     8001      801   15.99    58.0   22.19     0.000  22.193    0.00   19.535     0.57    11.330     0.57   13.025
+     2004      204    5.14    58.0   22.19     0.000  22.193    0.00   19.605     0.25    11.371     0.25   17.446
+     2005      205    5.38    58.0   22.19     0.000  22.193    0.00   19.567     0.23    11.349     0.23   15.243
+     2006      206   18.78    58.0   22.19     0.000  22.193    0.00   19.537     0.68    11.331     0.68   13.161
+     2007      207   11.57    58.0   22.19     0.000  22.193    0.00   19.561     0.47    11.346     0.47   14.882
+     2008      208    0.65    58.0   22.19     0.000  22.193    0.00   19.631     0.03    11.386     0.03   18.538
+     2009      209    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+     1016      116    3.27    58.0   22.19     0.000  22.193    0.00   19.628     0.17    11.384     0.17   18.422
+     1017      117    0.01    58.0   22.19     0.000  22.193    0.00    0.000     0.00     0.000     0.00    0.000
+
+           *** NOTE *** IMPERVIOUS AREA STATISTICS AGGREGATE IMPERVIOUS AREAS WITH AND WITHOUT DEPRESSION STORAGE
+
+
+
+                                        SUMMARY STATISTICS FOR CHANNEL/PIPES
+                                     ================================================
+
+                                       MAXIMUM   MAXIMUM   MAXIMUM  MAXIMUM    TIME        LENGTH     MAXIMUM    RATIO OF  RATIO OF
+           FULL     FULL      FULL    COMPUTED  COMPUTED  COMPUTED COMPUTED     OF           OF      SURCHARGE   MAX. TO  MAX. DEPTH
+  CHANNEL  FLOW   VELOCITY    DEPTH    INFLOW   OUTFLOW    DEPTH   VELOCITY OCCURRENCE    SURCHARGE   VOLUME     FULL      TO FULL
+   NUMBER  (CMS)    (M/S)      (M)      (CMS)    (CMS)      (M)    (M/S)    DAY   HR.      (HOUR)     (CU-M)     FLOW       DEPTH
+ -------- -------------------------   -------------------------------------------------   ---------------------- -------------------
+      401     1.46   5.01     0.61       0.23      0.23     0.16    3.65  4/23/89 10.27       0.00   0.00000E+00    0.16      0.27
+      101     1.96   4.29     0.76       0.31      0.30     0.20    3.09  4/23/89 10.27       0.00   0.00000E+00    0.15      0.26
+      102     2.65   5.81     0.76       0.69      0.68     0.26    4.88  4/23/89 10.27       0.00   0.00000E+00    0.26      0.35
+      301     0.68   4.17     0.46       0.16      0.16     0.15    3.38  4/23/89 10.27       0.00   0.00000E+00    0.23      0.33
+      103     2.83   4.31     0.91       0.86      0.86     0.34    3.78  4/23/89 10.27       0.00   0.00000E+00    0.30      0.38
+      501     0.86   3.84     0.53       0.33      0.32     0.22    3.55  4/23/89 10.27       0.00   0.00000E+00    0.37      0.42
+      302     0.98   4.41     0.53       0.20      0.20     0.16    3.45  4/23/89 10.27       0.00   0.00000E+00    0.20      0.30
+      104     2.66   4.06     0.91       1.32      1.28     0.45    4.02  4/23/89 10.27       0.00   0.00000E+00    0.48      0.49
+      303     2.08   4.55     0.76       0.78      0.74     0.32    4.17  4/23/89 10.27       0.00   0.00000E+00    0.36      0.41
+      105     4.79   5.36     1.07       1.56      1.55     0.42    4.78  4/23/89 10.28       0.00   0.00000E+00    0.32      0.39
+      304     1.36   2.98     0.76       0.80      0.79     0.42    3.09  4/23/89 10.27       0.00   0.00000E+00    0.58      0.55
+      106     5.10   4.37     1.22       1.55      1.55     0.46    3.83  4/23/89 10.28       0.00   0.00000E+00    0.30      0.38
+      201     2.33   4.22     0.84       0.77      0.76     0.33    3.78  4/23/89 10.67       0.00   0.00000E+00    0.33      0.39
+      305     3.17   4.83     0.91       0.88      0.87     0.33    4.13  4/23/89 10.27       0.00   0.00000E+00    0.28      0.36
+      107     5.29   4.53     1.22       1.66      1.65     0.47    4.00  4/23/89 10.28       0.00   0.00000E+00    0.31      0.38
+      202     3.50   6.34     0.84       0.83      0.83     0.28    5.20  4/23/89 10.66       0.00   0.00000E+00    0.24      0.33
+      601     2.51   4.56     0.84       0.85      0.79     0.32    4.04  4/23/89 10.27       0.00   0.00000E+00    0.31      0.39
+      108     8.73   4.79     1.52       2.54      2.50     0.56    4.13  4/23/89 10.29       0.00   0.00000E+00    0.29      0.37
+      801     2.14   4.68     0.76       0.57      0.55     0.26    3.92  4/23/89 10.27       0.00   0.00000E+00    0.26      0.35
+      203     2.58   3.94     0.91       0.83      0.83     0.36    3.51  4/23/89 10.67       0.00   0.00000E+00    0.32      0.39
+      602     3.44   4.24     1.02       0.79      0.79     0.33    3.44  4/23/89 10.27       0.00   0.00000E+00    0.23      0.32
+      109    11.25   5.10     1.68       2.83      2.79     0.57    4.23  4/23/89 10.29       0.00   0.00000E+00    0.25      0.34
+      204     4.69   4.57     1.14       1.55      1.55     0.45    4.10  4/23/89 10.67       0.00   0.00000E+00    0.33      0.40
+      603     6.75   8.33     1.02       0.79      0.78     0.23    5.56  4/23/89 10.28       0.00   0.00000E+00    0.12      0.23
+      110    12.87   4.70     1.87       3.21      3.14     0.63    3.88  4/23/89 10.30       0.00   0.00000E+00    0.24      0.34
+      205     5.57   4.77     1.22       1.74      1.71     0.46    4.20  4/23/89 10.67       0.00   0.00000E+00    0.31      0.38
+      111    16.22   5.93     1.87       3.92      3.89     0.62    4.87  4/23/89 10.30       0.00   0.00000E+00    0.24      0.33
+      206     7.42   5.02     1.37       2.33      2.30     0.52    4.43  4/23/89 10.67       0.00   0.00000E+00    0.31      0.38
+      701     1.36   6.11     0.53       0.41      0.41     0.20    5.33  4/23/89 10.27       0.00   0.00000E+00    0.30      0.37
+      112    17.12   6.01     1.90       4.04      4.02     0.63    4.91  4/23/89 10.30       0.00   0.00000E+00    0.23      0.33
+      207     8.08   4.43     1.52       2.69      2.62     0.60    3.95  4/23/89 10.68       0.00   0.00000E+00    0.32      0.39
+      113    19.40   5.42     2.13       4.50      4.49     0.70    4.41  4/23/89 10.32       0.00   0.00000E+00    0.23      0.33
+      208    14.72   6.67     1.68       2.63      2.63     0.48    5.05  4/23/89 10.68       0.00   0.00000E+00    0.18      0.29
+      114    21.30   5.55     2.21       4.66      4.63     0.70    4.44  4/23/89 10.34       0.00   0.00000E+00    0.22      0.32
+      209     7.81   3.54     1.68       2.63      2.63     0.67    3.19  4/23/89 10.69       0.00   0.00000E+00    0.34      0.40
+      115    23.31   5.68     2.29       4.66      4.65     0.69    4.43  4/23/89 10.34       0.00   0.00000E+00    0.20      0.30
+      116    54.27   8.22     2.00       7.19      7.19     0.49    4.56  4/23/89 10.70       0.00   0.00000E+00    0.13      0.24
+      117    37.35   5.66     2.00       7.19      7.17     0.63    3.54  4/23/89 10.70       0.00   0.00000E+00    0.19      0.31
+      118                                 7.2                             4/23/89 10.70
+
+                                              TOTAL NUMBER OF CHANNELS/PIPES =   39
+
+  *** NOTE ***  THE MAXIMUM FLOWS AND DEPTHS ARE CALCULATED AT THE END OF THE TIME INTERVAL 
+
+1
+        100.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+         80.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+         60.000 -               **                                                                                  -
+                I               **                                                                                  I
+                I               **                                                                                  I
+  RAINFALL      I               **                                                                                  I
+                I               **                                                                                  I
+     IN         I               **                                                                                  I
+                I               **                                                                                  I
+    MM/HR       I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+         40.000 -               **                                                                                  -
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+         20.000 -               **                                                                                  -
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                                                                  I
+                I               **                                            **                                    I
+                I               ***                                           **                                    I
+                I               ***                   *                       **                       *            I
+                I       **      ***         **        *                       **   *              *    *            I
+          0.000 I----***********************************************************************************--I---------I
+               2.8       3.2       3.6       4.0       4.4       4.8       5.2       5.6       6.0       6.4       6.8
+
+                  LOCATION NO. : 538976288          TIME IN HOURS                                        
+
+                  RAINFALL HYETOGRAPH                                          
+
+1
+         20.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+         16.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                         **                                                                        I
+         12.000 -                         **                                                                        -
+                I                         **                                                                        I
+                I                         **              **                                                        I
+  RAINFALL      I                         **              **                                                        I
+                I                         **              **                                                        I
+     IN         I                         **              **                                                        I
+                I                         **              **                        *                   *           I
+    MM/HR       I                         **              **                        *                   *           I
+                I                         **              **                        *                   *           I
+                I                         **              **                        *                   *           I
+          8.000 -                         **              **                        *                   *           -
+                I                         **              **                        *                   *           I
+                I                         **              **                        *                   *           I
+                I                         **   **         **             **         *                   *           I
+                I                         **   ** **      **            ***         *                   *           I
+                I                         **   ** **      **            * *         *                   *           I
+                I                         **   ** **      **            * *         *                   *           I
+                I                         **   ** **      **            * *         *                   *           I
+                I                         ***  ** **      **            * *         *                   *           I
+                I                         ***  ** **      **            * *         *                   *           I
+          4.000 -                         ***  ** **      **            * *         *                   *           -
+                I                         ***  ** **      **            * *         *                   *           I
+                I                         ***  ** **      **            * *         *              **   *           I
+                I                         ***  ** **      **          *** *         *              **   *           I
+                I                         ***  ** **  *   ****       **** * **      *      ****    ***  *           I
+                I                         ***  ** **  *   ****       * ** * **      ***    ****  *** *  *           I
+                I                         ******* **  *  *****       * ** * **   ** ***    ****  *** *  *           I
+                I                         ******* **  *  * ***     *** ** * **   ****** ** ****  *** *  *           I
+                I                        ******** **  *  * ***     *** ** * **   * **** ** ****  *** *  **          I
+                I                        * ****** **  *  * ***     *** ** * **   * **** ** ********* *  **          I
+          0.000 I-------******************-***************-***********-**-********-*****************-******---------I
+               6.0       6.4       6.8       7.2       7.6       8.0       8.4       8.8       9.2       9.6      10.0
+
+                  LOCATION NO. : 538976288          TIME IN HOURS                                        
+
+                  RAINFALL HYETOGRAPH                                          
+
+1
+        100.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+         80.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+         60.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+  RAINFALL      I                                                                                                   I
+                I                                                                                                   I
+     IN         I                     **                                                                            I
+                I                     **                                                                            I
+    MM/HR       I                     **                                                                            I
+                I                     **                                                                            I
+                I                     **                                                                            I
+         40.000 -                     **                                                                            -
+                I               **    ** **                                                                         I
+                I             ****    ** **                                                                         I
+                I             ****    ** **                                                                         I
+                I             ****    ** **                                                                         I
+                I             *****   ** **                                                                         I
+                I             *****   ** **                                                                         I
+                I             *****   ** **                                                                         I
+                I             *  ** **** **                                                                         I
+                I             *  ** **** **                                                                         I
+         20.000 -             *  ** **** ***                                                                        -
+                I             *  ** **** * *                                                                        I
+                I             *  ** **** * *                                                                        I
+                I           ***  ** **** * *                                                                        I
+                I           ***  ** ****** *                                                                        I
+                I         ****   ** *****  *              **   ***                                                  I
+                **        ****   ** *****  *             ***** ***  **                                              I
+                **        ****   ** *****  *           *** ******* ***                                              I
+                **   **   ****   ** *****  *** ***** ***** **** ** * *     **                                       I
+                ** ****   ****   ** ***    ********* ***** **** ** * **  ******                                     I
+          0.000 **************---******----****-**********-****-****-*******************************------I---------I
+               9.6      10.0      10.4      10.8      11.2      11.6      12.0      12.4      12.8      13.2      13.6
+
+                  LOCATION NO. : 538976288          TIME IN HOURS                                        
+
+                  RAINFALL HYETOGRAPH                                          
+
+1
+         10.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+          8.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                      ***                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+          6.000 -                                                      * *                                          -
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+  RAINFALL      I                                                      * *                                          I
+                I                                                      * *                                          I
+     IN         I                                                      * *                                          I
+                I                                                      * *                                          I
+    MM/HR       I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+          4.000 -                                                      * *                                          -
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * *                                          I
+                I                                                      * ****                                       I
+                I                                                      * ** *                                       I
+          2.000 -                                                      * ** *                                       -
+                I                                                      * ** *                                       I
+                I    ***                                               * ** *                                       I
+                I    * *                                               * ** *                                       I
+                I    * *                                               * ** *                                       I
+                I    * *                                               * ** *                                       I
+                I    * *                                        ***    * ** *                                       I
+                I    * *            ***                         * *    * ** *                                       I
+                I    * *            * *                         * *    * ** *                                       I
+                I    * *            * *                         * *    * ** *                                       I
+          0.000 I----*-**************-***************************-******-**-*---------I---------I---------I---------I
+              12.8      13.0      13.2      13.4      13.6      13.8      14.0      14.2      14.4      14.6      14.8
+
+                  LOCATION NO. : 538976288          TIME IN HOURS                                        
+
+                  RAINFALL HYETOGRAPH                                          
+
+1
+         10.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+          8.000 -                                                                                                   -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                         *                                                                         I
+                I                         *                                                                         I
+                I                         *                                                                         I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+          6.000 -                         **                                                                        -
+                I                         **                                                                        I
+                I                         **                                                                        I
+   RUNOFF       I                         **                                                                        I
+                I                         **                                                                        I
+     IN         I                         **                                                                        I
+                I                         **                                                                        I
+  CUB M/S       I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+          4.000 -                         **                                                                        -
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+                I                         **                                                                        I
+          2.000 -                         **                                                                        -
+                I                         **                                                                        I
+                I                         * *                                                                       I
+                I                         * ***                                                                     I
+                I                        *  ***                                                                     I
+                I        *               *  * *                                                                     I
+                I        *          **   *  * *                                                                     I
+                I        **        **** **    *                                                                     I
+                I        **       ********     *                                                                    I
+                I        **** **  *  * **      **                                                                   I
+          0.000 I-------**I********-I---------I-*************************---I---------I---------I---------I---------I
+               0.0       4.0       8.0      12.0      16.0      20.0      24.0      28.0      32.0      36.0      40.0
+
+                 LOCATION NO. : FLOW SUM            TIME IN HOURS                                        
+
+                  SURFACE INLET HYDROGRAPH FLOW  SUMMATION FOR ALL INLETS      
+
+1
+         80.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I        *                                                                                          I
+                I        *                                                                                          I
+         60.000 -        *                                                                                          -
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+                I        *                                                                                          I
+         40.000 -        *                                                                                          -
+                I        *                                                                                          I
+                I        *                *                                                                         I
+ INFILTRATN     I        *               **                                                                         I
+                I        *               **                                                                         I
+     IN         I        *               **                                                                         I
+                I        *               **                                                                         I
+    MM/HR       I        *               **                                                                         I
+                I        *               **                                                                         I
+                I        *               **                                                                         I
+         20.000 -        *               ***                                                                        -
+                I        *               ***                                                                        I
+                I        *               ***                                                                        I
+                I        *               ***                                                                        I
+                I        *        *      ***                                                                        I
+                I        *        *   * ****                                                                        I
+                I        *        *   * *****      *                                                                I
+                I        *   *    ** ** ******     *                                                                I
+                I        * * *    ** ** *******    *                                                                I
+                I        * * *  * ************* *  *                                                                I
+          0.000 -       *************************************************                                           -
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+                I                                                                                                   I
+        -20.000 I---------I---------I---------I---------I---------I---------I---------I---------I---------I---------I
+               0.0       4.0       8.0      12.0      16.0      20.0      24.0      28.0      32.0      36.0      40.0
+
+                 LOCATION NO. : INFILTRA            TIME IN HOURS                                        
+
+                  PLOT OF INFILTRATION RATE                                    
+1
+ **********************************************
+ *  Summary of quantity results (flow in cms) *
+ **********************************************
+
+    APPLICATION OF STORM WATER MANAGEMENT MODEL (SWMM)                              
+    POWELLS CREEK SIMULATION                                                        
+
+
+                      Chan/Inlt
+                            118
+  Mo/Da/Yr  Hr:Min    Cubic m/s
+  --------  ------    ---------
+   4/23/89   3  30        0.029
+   4/23/89   3  35        0.789
+   4/23/89   3  40        1.062
+   4/23/89   3  45        0.755
+   4/23/89   3  50        0.523
+   4/23/89   3  55        0.377
+   4/23/89   4   0        0.285
+   4/23/89   4   5        0.232
+   4/23/89   4  10        0.192
+   4/23/89   4  15        0.157
+   4/23/89   4  20        0.127
+   4/23/89   4  25        0.119
+   4/23/89   4  30        0.122
+   4/23/89   4  35        0.119
+   4/23/89   4  40        0.106
+   4/23/89   4  45        0.089
+   4/23/89   4  50        0.073
+   4/23/89   4  55        0.059
+   4/23/89   5   0        0.048
+   4/23/89   5   5        0.039
+   4/23/89   5  10        0.032
+   4/23/89   5  15        0.026
+   4/23/89   5  20        0.022
+   4/23/89   5  25        0.030
+   4/23/89   5  30        0.059
+   4/23/89   5  35        0.096
+   4/23/89   5  40        0.117
+   4/23/89   5  45        0.113
+   4/23/89   5  50        0.097
+   4/23/89   5  55        0.080
+   4/23/89   6   0        0.065
+   4/23/89   6   5        0.052
+   4/23/89   6  10        0.044
+   4/23/89   6  15        0.039
+   4/23/89   6  20        0.038
+   4/23/89   6  25        0.044
+   4/23/89   6  30        0.053
+   4/23/89   6  35        0.057
+   4/23/89   6  40        0.055
+   4/23/89   6  45        0.048
+   4/23/89   6  50        0.041
+   4/23/89   6  55        0.033
+   4/23/89   7   0        0.027
+   4/23/89   7   5        0.026
+   4/23/89   7  10        0.086
+   4/23/89   7  15        0.277
+   4/23/89   7  20        0.462
+   4/23/89   7  25        0.519
+   4/23/89   7  30        0.538
+   4/23/89   7  35        0.497
+   4/23/89   7  40        0.421
+1
+ **********************************************
+ *  Summary of quantity results (flow in cms) *
+ **********************************************
+
+    APPLICATION OF STORM WATER MANAGEMENT MODEL (SWMM)                              
+    POWELLS CREEK SIMULATION                                                        
+
+
+                      Chan/Inlt
+                            118
+    Date     Time          Flow 
+  Mo/Da/Yr  Hr:Min    Cubic m/s
+  --------  ------    ---------
+   4/23/89   7  45        0.474
+   4/23/89   7  50        0.700
+   4/23/89   7  55        0.700
+   4/23/89   8   0        0.540
+   4/23/89   8   5        0.401
+   4/23/89   8  10        0.315
+   4/23/89   8  15        0.291
+   4/23/89   8  20        0.409
+   4/23/89   8  25        0.698
+   4/23/89   8  30        0.732
+   4/23/89   8  35        0.587
+   4/23/89   8  40        0.449
+   4/23/89   8  45        0.397
+   4/23/89   8  50        0.501
+   4/23/89   8  55        0.547
+   4/23/89   9   0        0.468
+   4/23/89   9   5        0.382
+   4/23/89   9  10        0.344
+   4/23/89   9  15        0.316
+   4/23/89   9  20        0.286
+   4/23/89   9  25        0.276
+   4/23/89   9  30        0.297
+   4/23/89   9  35        0.363
+   4/23/89   9  40        0.524
+   4/23/89   9  45        0.642
+   4/23/89   9  50        0.599
+   4/23/89   9  55        0.564
+   4/23/89  10   0        0.492
+   4/23/89  10   5        0.492
+   4/23/89  10  10        0.926
+   4/23/89  10  15        3.377
+   4/23/89  10  20        7.114
+   4/23/89  10  25        5.759
+   4/23/89  10  30        4.762
+   4/23/89  10  35        6.654
+   4/23/89  10  40        6.547
+   4/23/89  10  45        6.021
+   4/23/89  10  50        3.390
+   4/23/89  10  55        2.151
+   4/23/89  11   0        1.574
+   4/23/89  11   5        1.253
+   4/23/89  11  10        1.005
+   4/23/89  11  15        0.852
+   4/23/89  11  20        0.992
+   4/23/89  11  25        1.192
+   4/23/89  11  30        1.206
+   4/23/89  11  35        1.434
+   4/23/89  11  40        1.461
+   4/23/89  11  45        1.407
+   4/23/89  11  50        1.292
+1
+ **********************************************
+ *  Summary of quantity results (flow in cms) *
+ **********************************************
+
+    APPLICATION OF STORM WATER MANAGEMENT MODEL (SWMM)                              
+    POWELLS CREEK SIMULATION                                                        
+
+
+                      Chan/Inlt
+                            118
+    Date     Time          Flow 
+  Mo/Da/Yr  Hr:Min    Cubic m/s
+  --------  ------    ---------
+   4/23/89  11  55        0.965
+   4/23/89  12   0        0.702
+   4/23/89  12   5        0.578
+   4/23/89  12  10        0.503
+   4/23/89  12  15        0.407
+   4/23/89  12  20        0.314
+   4/23/89  12  25        0.242
+   4/23/89  12  30        0.188
+   4/23/89  12  35        0.148
+   4/23/89  12  40        0.118
+   4/23/89  12  45        0.095
+   4/23/89  12  50        0.076
+   4/23/89  12  55        0.062
+   4/23/89  13   0        0.052
+   4/23/89  13   5        0.047
+   4/23/89  13  10        0.043
+   4/23/89  13  15        0.038
+   4/23/89  13  20        0.034
+   4/23/89  13  25        0.031
+   4/23/89  13  30        0.027
+   4/23/89  13  35        0.023
+   4/23/89  13  40        0.019
+   4/23/89  13  45        0.016
+   4/23/89  13  50        0.013
+   4/23/89  13  55        0.011
+   4/23/89  14   0        0.014
+   4/23/89  14  40        0.058
+   4/23/89  15  20        0.010
+   4/23/89  16   0        0.002
+   4/23/89  16  40        0.001
+   4/23/89  17  20        0.000
+   4/23/89  18   0        0.000
+   4/23/89  18  40        0.000
+   4/23/89  19  20        0.000
+   4/23/89  20   0        0.000
+
+Flow wt'd means....      0.3729
+Flow wt'd std-devs.      1.0411
+Maximum value......      7.1678
+Minimum value......      0.0000
+Total loads........    2.69E+04
+                        Cubic-m
+
+ ===> Runoff simulation ended normally.
+
+ ===> SWMM 4.40 simulation ended normally.
+      Always check output file for possible warning messages.
+
+ ===> Your input file was named : Ass2.dat                
+ ===> Your output file was named: Ass2.wch                
+
+ ******************************************************
+ *       SWMM 4.40 Simulation Date and Time Summary   *
+ ******************************************************
+ * Starting Date... September  16,   98                *
+ *          Time...         21:29:25:79                *
+ *   Ending Date... September  16,   98                *
+ *          Time...         21:33:33:34                *
+ *  Elapsed Time...               4.133 minutes.       *
+ *  Elapsed Time...             248.003 seconds.       *
+ *******************************************************
+
