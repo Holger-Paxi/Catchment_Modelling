@@ -1,0 +1,13 @@
+event,simulation,relative_error,absolute_error,time_to_peak,time_to_centroid,sum_of_absolute_difference_abs,sum_of_absolute_difference_rel,sum_of_the_squared_error_abs,sum_of_the_squared_error_rel,mean_squared_error,root_mean_squared_error,mean_error,error_variance,nash_sutcliffe_efficiency,kling_gupta_efficiency,coefficient_of_variation,volume_variation,average
+event_1,simulation_01,2.0,2.0,2.5,1.0,1.0,1.0,1.0,2.0,1.0,1.0,1.0,1.0,1.0,4.0,4.0,1.0,1.65625
+event_1,simulation_02,3.0,3.0,2.5,2.0,4.0,4.0,4.0,4.0,4.0,4.0,3.0,4.0,4.0,2.0,2.0,3.0,3.28125
+event_1,simulation_03,1.0,1.0,2.5,3.0,2.0,3.0,2.0,3.0,2.0,2.0,2.0,2.0,2.0,3.0,3.0,2.0,2.21875
+event_1,simulation_04,4.0,4.0,2.5,4.0,3.0,2.0,3.0,1.0,3.0,3.0,4.0,3.0,3.0,1.0,1.0,4.0,2.84375
+event_2,simulation_01,1.0,1.0,1.5,1.0,1.0,2.0,1.0,3.0,1.0,1.0,2.0,1.0,1.0,4.0,1.0,2.0,1.53125
+event_2,simulation_02,4.0,4.0,3.5,4.0,2.0,1.0,4.0,1.0,4.0,4.0,4.0,4.0,4.0,1.0,4.0,4.0,3.28125
+event_2,simulation_03,2.0,2.0,3.5,2.0,4.0,4.0,3.0,4.0,3.0,3.0,3.0,3.0,3.0,2.0,3.0,3.0,2.96875
+event_2,simulation_04,3.0,3.0,1.5,3.0,3.0,3.0,2.0,2.0,2.0,2.0,1.0,2.0,2.0,3.0,2.0,1.0,2.21875
+event_3,simulation_01,4.0,4.0,2.5,1.0,1.0,1.0,1.0,1.0,1.0,1.0,3.0,1.0,1.0,2.0,1.0,3.0,1.78125
+event_3,simulation_02,2.0,2.0,2.5,3.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,1.0,2.0,4.0,3.28125
+event_3,simulation_03,3.0,3.0,2.5,4.0,2.0,2.0,2.0,2.0,2.0,2.0,1.0,2.0,2.0,4.0,4.0,1.0,2.40625
+event_3,simulation_04,1.0,1.0,2.5,2.0,3.0,3.0,3.0,3.0,3.0,3.0,2.0,3.0,3.0,3.0,3.0,2.0,2.53125
