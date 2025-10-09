@@ -1,0 +1,17 @@
+key,value
+catch_area,40000
+width,400
+length,100.0
+slope,0.015
+roughness,0.075
+intensity,1.75e-05
+duration,2400
+ini_loss,0.002
+cont_loss,8.333333333333333e-07
+ini_loss_dur,114.28571428571429
+rainfall_excess,1.6666666666666664e-05
+alpha,1.632993161855452
+beta,1.6666666666666667
+time_conc_rel,962.6532479824282
+time_conc_abs,1076.9389622681424
+step,60
