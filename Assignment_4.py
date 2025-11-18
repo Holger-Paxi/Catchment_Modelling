@@ -211,7 +211,7 @@ def relative_error_metric(arg_recorded, arg_predicted, arg_output_dir, arg_event
     max_pre_flow_rate = arg_predicted.max()
     
     # relative error (RE)
-    re = abs(max_pre_flow_rate - max_rec_flow_rate)/max_rec_flow_rate
+    re = abs(max_pre_flow_rate - max_rec_flow_rate)*100/max_rec_flow_rate
 
     arg_df = pd.concat(objs=[arg_df[arg_recorded == max_rec_flow_rate], arg_df[arg_predicted == max_pre_flow_rate]])
     arg_df.drop_duplicates(inplace=True)
@@ -581,7 +581,7 @@ def volume_variation_relative_metric(arg_recorded, arg_predicted, arg_output_dir
     # simulated average volume
     vol_pre = arg_df.Q_ave_pre.sum()
     # volume variation (VV)
-    vv = (vol_pre - vol_rec)/vol_rec
+    vv = (vol_pre - vol_rec)*100/vol_rec
 
     arg_df.to_csv(path_or_buf='{}df__{}__VV_rel__{}__{}.csv'.format(arg_output_dir, arg_event, arg_recorded.name, arg_predicted.name))
     
