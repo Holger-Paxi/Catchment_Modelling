@@ -1,4 +1,6 @@
-# %% [markdown]
+#!/usr/bin/env python
+# coding: utf-8
+
 # A catchment modelling system for simulation of flows in the Powells Creek Stormwater System has been developed using the Stormwater Management Model (SWMM).  The Powells Creek stormwater system is located near the Olympic Park area in the inner West of Sydney.
 # 
 # The ultimate aim of the catchment modelling system is the reproduction of both the quantity and quality of stormwater from the upstream catchment.  To increase the usefulness of the model, it is being calibrated against recorded data from a gauging station (located at Elva Ave, Strathfield) operated by the School of Civil and Environmental Engineering, UNSW.
@@ -29,7 +31,9 @@
 # 
 # `Strathfield Project 1989-2020.xlsx`  download
 
-# %%
+# In[1]:
+
+
 import pandas as pd
 import numpy as np
 import datetime as dt
@@ -38,33 +42,53 @@ import matplotlib as mpl
 import math
 import os
 
-# %% [markdown]
+
 # # read input data
 
-# %% [markdown]
 # ## simulated data
 
-# %%
-sim_data = pd.read_excel(io='./Inputs_CM_Assignment_2/strathfield 1989 2020.xlsx', sheet_name='Predicted Flows')
-sim_data.drop(index=[136,137], inplace=True)
-sim_data['Timestamp'] = pd.to_datetime(arg=sim_data.Date) + pd.to_timedelta(arg=sim_data.Time.astype(str))
+# In[2]:
+
+
+sim_data = pd.read_excel(
+    io='./Inputs_CM_Assignment_2/strathfield 1989 2020.xlsx', 
+    sheet_name='Predicted Flows'
+)
+sim_data.dropna(axis=0, inplace=True)
+sim_data['Timestamp'] = (
+    pd.to_datetime(arg=sim_data.Date) + 
+    pd.to_timedelta(arg=sim_data.Time.astype(str))
+)
 sim_data = sim_data[sim_data.columns[[3,2]]]
 sim_data
 
-# %% [markdown]
+
 # ## recorded data
 
-# %%
-rec_data = pd.read_excel(io='./Inputs_CM_Assignment_2/strathfield 1989 2020.xlsx', sheet_name='Recorded Flows')
-rec_data['Timestamp'] = pd.to_datetime(arg=rec_data.Date) + pd.to_timedelta(arg=rec_data.Time.astype(str))
+# In[3]:
+
+
+rec_data = pd.read_excel(
+    io='./Inputs_CM_Assignment_2/strathfield 1989 2020.xlsx', 
+    sheet_name='Recorded Flows'
+)
+rec_data['Timestamp'] = (
+    pd.to_datetime(arg=rec_data.Date) + 
+    pd.to_timedelta(arg=rec_data.Time.astype(str))
+)
 rec_data = rec_data[rec_data.columns[[4,3]]]
 rec_data
 
-# %% [markdown]
+
 # ## rating curve
 
-# %%
-rat_cur = pd.read_table(filepath_or_buffer='./Inputs_CM_Assignment_2/strathfield/strathfield.txt', sep='\s+', skiprows=10)
+# In[4]:
+
+
+rat_cur = pd.read_table(
+    filepath_or_buffer='./Inputs_CM_Assignment_2/strathfield/strathfield.txt', 
+    sep='\s+', skiprows=10
+)
 rat_cur.drop(index=range(37,43), inplace=True)
 rat_cur.drop(index=range(47,50), inplace=True)
 rat_cur.reset_index(drop=True, inplace=True)
@@ -72,7 +96,10 @@ rat_cur.set_index(keys='G.H.', inplace=True)
 rat_cur.astype(float)
 rat_cur
 
-# %%
+
+# In[5]:
+
+
 def rounding(n, decimal=0):
     multp = 10**decimal
     n_trunc = math.trunc(n*multp)/multp
@@ -81,25 +108,44 @@ def rounding(n, decimal=0):
     else:
         return n_trunc
 
-# %%
+
+# In[6]:
+
+
 info = np.array([
     [rounding(float(indc) + float(indr), 2), float(rat_cur.loc[indr, indc])] 
     for indr in rat_cur.index 
     for indc in rat_cur.columns])
 info
 
-# %%
+
+# In[7]:
+
+
 rat_cur = pd.DataFrame(data=info, columns=['Depth', 'Flow'])
 rat_cur.dropna(axis=0, inplace=True)
 rat_cur.reset_index(drop=True, inplace=True)
 rat_cur
 
-# %%
-new_ind = pd.DataFrame(data=np.arange(start=rat_cur.Depth.min(), stop=rat_cur.Depth.max(), step=0.001), columns=['Depth'])
+
+# In[8]:
+
+
+new_ind = pd.DataFrame(
+    data=np.arange(
+        start=rat_cur.Depth.min(), 
+        stop=rat_cur.Depth.max(), 
+        step=0.001
+    ), 
+    columns=['Depth']
+)
 new_ind.Depth.apply(lambda arg: rounding(arg, 3))
 new_ind
 
-# %%
+
+# In[9]:
+
+
 rat_cur = pd.concat(objs=[rat_cur, new_ind], axis=0)
 rat_cur.Depth = rat_cur.Depth.apply(lambda arg: rounding(arg, 3))
 rat_cur.drop_duplicates(subset='Depth', inplace=True)
@@ -108,33 +154,45 @@ rat_cur.reset_index(drop=True, inplace=True)
 rat_cur.interpolate(method='linear', axis=0, inplace=True)
 rat_cur
 
-# %% [markdown]
+
 # # merging recorded data and rating curve
 
-# %% [markdown]
 # ## recorded data
 
-# %%
+# In[10]:
+
+
 rec_data = pd.merge(left=rat_cur, right=rec_data, how='right', on='Depth')
 rec_data = rec_data[rec_data.columns[[2,1]]]
 rec_data
 
-# %%
+
+# In[11]:
+
+
 print('min: {}\nmax: {}'.format(rec_data.Timestamp.min(), rec_data.Timestamp.max()))
 print('min: {}\nmax: {}'.format(rec_data.Flow.min(), rec_data.Flow.max()))
 
-# %%
+
+# In[12]:
+
+
 print('min: {}\nmax: {}'.format(sim_data.Timestamp.min(), sim_data.Timestamp.max()))
 print('min: {}\nmax: {}'.format(sim_data.Flow.min(), sim_data.Flow.max()))
 
-# %% [markdown]
+
 # # create output directory
 
-# %%
+# In[13]:
+
+
 arg_output_dir = './Outputs_CM_Assignment_2/'
 arg_output_dir
 
-# %%
+
+# In[14]:
+
+
 def create_output_dir(arg_output_dir):
     """create output directory if it does not exist
 
@@ -144,24 +202,32 @@ def create_output_dir(arg_output_dir):
     if not os.path.exists(arg_output_dir):
         os.makedirs(arg_output_dir)
 
-# %% [markdown]
+
 # # comparing simulated and recorded data
 
-# %%
+# In[15]:
+
+
 def move_compare_hydrographs(minutes=0, sim_data=sim_data, rec_data=rec_data):
     # delta time
     delta_time = dt.timedelta(minutes=minutes)
-    
+
     # transforming data by delta time
     sim_data_transformed = sim_data.copy()
     sim_data_transformed.Timestamp = sim_data_transformed.Timestamp + delta_time
-    
+
     # minimum and maximum timestamps
     min_time = sim_data_transformed.Timestamp.min()
     max_time = sim_data_transformed.Timestamp.max()
 
     # dataframe
-    df = pd.concat(objs=[rec_data.set_index(keys='Timestamp'), sim_data_transformed.set_index(keys='Timestamp')], axis=1)
+    df = pd.concat(
+        objs=[
+            rec_data.set_index(keys='Timestamp'), 
+            sim_data_transformed.set_index(keys='Timestamp')
+        ], 
+        axis=1
+    )
     df.reset_index(drop=False, inplace=True)
     df = df[(df.Timestamp >= min_time) & (df.Timestamp <= max_time)]
     df.dropna(inplace=True)
@@ -186,34 +252,55 @@ def move_compare_hydrographs(minutes=0, sim_data=sim_data, rec_data=rec_data):
     df['ave_rec'] = (df.rec_lft + df.rec_rgt)*df.delta_time/2
     df['ave_sim'] = (df.sim_lft + df.sim_rgt)*df.delta_time/2
 
-    # root mean square error
-    rmse = df.sq_dif.mean()**0.5
-    # mean squared error
-    mse = df.sq_dif.mean()
+    # relative error
+    max_rec = df.Recorded_data.max()
+    max_sim = df.Simulated_data.max()
+    re = abs(max_rec - max_sim)*100/max_rec
+    # absolute error
+    ae = abs(max_rec - max_sim)
+    # time to peak error
+    ttp_rec = df.Timestamp[df.Recorded_data.idxmax()]
+    ttp_sim = df.Timestamp[df.Simulated_data.idxmax()]
+    ttp = (ttp_sim - ttp_rec)/dt.timedelta(minutes=1)
+    # time to centroid error
+    t_num = df.Timestamp.astype(dtype='int64')
+    centroid_rec = (t_num*df.Recorded_data).sum()/df.Recorded_data.sum()
+    centroid_sim = (t_num*df.Simulated_data).sum()/df.Simulated_data.sum()
+    centroid_rec = pd.to_datetime(arg=centroid_rec)
+    centroid_sim = pd.to_datetime(arg=centroid_sim)
+    ttc = (centroid_sim - centroid_rec)/dt.timedelta(minutes=1)
+    # sum of the absolute differences - absolute
+    sad_abs = df.abs_dif.sum()
+    # sum of the absolute differences - relative
+    sad_rel = (df.abs_dif/df.Recorded_data).sum()
     # sum of square differences - absolute
     ssd_abs = df.sq_dif.sum()
     # sum of square differences - relative
     ssd_rel = df.rel_sq_dif.sum()
-    # error variance
-    s2 = ssd_abs/(len(df.index) - 1)
-    # Nash-Sutcliffe Efficiency - modelling efficiency
-    nse = 1 - (df.sq_dif.sum()/df.sq_dif_rec.sum())
+    # mean squared error
+    mse = df.sq_dif.mean()
+    # root mean square error
+    rmse = df.sq_dif.mean()**0.5
     # mean error - mean bias error
     me = df.dif.mean()
     # mean absolute error
     mae = df.abs_dif.mean()
     # percent bias
     pbias = -df.dif.sum()*100/df.Recorded_data.sum()
+    # error variance
+    s2 = ssd_abs/(len(df.index) - 1)
+    # Nash-Sutcliffe Efficiency - modelling efficiency
+    nse = 1 - (df.sq_dif.sum()/df.sq_dif_rec.sum())
     # coefficient of variation
     r2 = (df.prod_rec_sim.sum()**2)/(df.sq_dif_rec.sum()*df.sq_dif_sim.sum())
     # Kling-Gupta Efficacy
-    kge = (
-        1 - (
-            (((r2**0.5) - 1)**2) + 
-            (((df.Simulated_data.mean()/df.Recorded_data.mean()) - 1)**2) + 
-            ((((df.Simulated_data.std()/df.Simulated_data.mean())/(df.Recorded_data.std()/df.Recorded_data.mean())) - 1)**2)
-        )**0.5
+    r = r2**0.5
+    beta = df.Simulated_data.mean()/df.Recorded_data.mean()
+    alpha = (
+        (df.Simulated_data.std()/df.Simulated_data.mean())/
+        (df.Recorded_data.std()/df.Recorded_data.mean())
     )
+    kge = 1 - ((r - 1)**2 + (beta - 1)**2 + (alpha - 1)**2)**0.5
     # recorded average volume
     vol_rec = df.ave_rec.sum()
     # simulated average volume
@@ -225,19 +312,25 @@ def move_compare_hydrographs(minutes=0, sim_data=sim_data, rec_data=rec_data):
 
     # dataframe metrics
     metrics = pd.DataFrame(data=np.array([
-        ['rmse', rmse], 
-        ['mse', mse], 
-        ['ssd_abs', ssd_abs], 
-        ['ssd_rel', ssd_rel], 
-        ['s2', s2],
-        ['nse', nse],
-        ['me', me],
-        ['mae', mae],
-        ['pbias', pbias],
-        ['r2', r2],
-        ['kge', kge],
-        ['vol_dif', vol_dif],
-        ['vol_dif_rel', vol_dif_rel]
+        ['re', re], # relative error
+        ['ae', ae], # absolute error
+        ['ttp', ttp], # time to peak error
+        ['ttc', ttc], # time to centroid error
+        ['sad_abs', sad_abs], # sum of the absolute differences - absolute
+        ['sad_rel', sad_rel], # sum of the absolute differences - relative
+        ['ssd_abs', ssd_abs], # sum of square differences - absolute
+        ['ssd_rel', ssd_rel], # sum of square differences - relative
+        ['mse', mse], # mean squared error
+        ['rmse', rmse], # root mean square error
+        ['me', me], # mean error - mean bias error
+        ['mae', mae], # mean absolute error
+        ['pbias', pbias], # percent bias
+        ['s2', s2], # error variance
+        ['nse', nse], # Nash-Sutcliffe Efficiency - modelling efficiency
+        ['kge', kge], # Kling-Gupta Efficacy
+        ['r2', r2], # coefficient of variation
+        ['vol_dif', vol_dif], # volume difference
+        ['vol_dif_rel', vol_dif_rel] # relative volume difference
         ]), columns=['metric', 'value'])
 
     # plot
@@ -260,31 +353,58 @@ def move_compare_hydrographs(minutes=0, sim_data=sim_data, rec_data=rec_data):
 
     return delta_time, sim_data_transformed, min_time, max_time, df, metrics
 
-# %%
-proposed_trans_values = pd.DataFrame(data=np.arange(start=0, stop=120, step=5), columns=['transformation'])
+
+# In[16]:
+
+
+proposed_trans_values = pd.DataFrame(
+    data=np.arange(start=0, stop=120, step=5), 
+    columns=['transformation']
+)
 proposed_trans_values
 
-# %%
-proposed_trans_values = proposed_trans_values.apply(lambda arg: move_compare_hydrographs(float(arg.transformation)), axis=1, result_type='expand')
-proposed_trans_values.columns = ['delta_time', 'sim_data_transformed', 'min_time', 'max_time', 'df', 'metrics']
+
+# In[17]:
+
+
+proposed_trans_values = proposed_trans_values.apply(
+    func=lambda arg: move_compare_hydrographs(float(arg.transformation)), 
+    axis=1, result_type='expand'
+)
+proposed_trans_values.columns = [
+    'delta_time', 'sim_data_transformed', 'min_time', 
+    'max_time', 'df', 'metrics'
+]
 proposed_trans_values
 
-# %% [markdown]
+
 # # export results to csv
 
-# %%
+# In[18]:
+
+
 for ind in proposed_trans_values.index:
     proposed_trans_values.df[ind].reset_index(drop=True).to_csv(
-        path_or_buf=arg_output_dir + 'shift_{:>03}_min.csv'.format(int(proposed_trans_values.delta_time[ind]/dt.timedelta(minutes=1))), 
+        path_or_buf=arg_output_dir + 'shift_{:>03}_min.csv'.format(
+            int(proposed_trans_values.delta_time[ind]/dt.timedelta(minutes=1))
+        ), 
         index=False
-        )
+    )
 
-# %% [markdown]
+
 # # calibration metrics and exporting results
 
-# %%
-calib_metric = pd.concat(objs=[ind.set_index(keys='metric') for ind in proposed_trans_values.metrics], axis=1)
-calib_metric.columns = ['shift_{:>02}_min'.format(int(ind/dt.timedelta(minutes=1))) for ind in proposed_trans_values.delta_time]
+# In[19]:
+
+
+calib_metric = pd.concat(
+    objs=[ind.set_index(keys='metric') for ind in proposed_trans_values.metrics], 
+    axis=1
+)
+calib_metric.columns = [
+    'shift_{:>02}_min'.format(int(ind/dt.timedelta(minutes=1))) 
+    for ind in proposed_trans_values.delta_time
+]
 calib_metric.reset_index(inplace=True)
 calib_metric.set_index(keys='metric', inplace=True)
 calib_metric = calib_metric.T
@@ -292,14 +412,19 @@ calib_metric = calib_metric.apply(pd.to_numeric)
 calib_metric.reset_index(inplace=True)
 calib_metric.rename(columns={'index':'shift_time'}, inplace=True)
 calib_metric.columns.name = None
-calib_metric.to_csv(path_or_buf=arg_output_dir + 'calibration_metric.csv', index=False)
+calib_metric.to_csv(
+    path_or_buf=arg_output_dir + 'calibration_metric.csv', 
+    index=False
+)
 calib_metric.set_index(keys='shift_time', inplace=True)
 calib_metric
 
-# %% [markdown]
+
 # # figures and exporting figures
 
-# %%
+# In[20]:
+
+
 for col in calib_metric.columns:
     fig, ax = plt.subplots()
     ax = calib_metric.plot(
@@ -307,12 +432,18 @@ for col in calib_metric.columns:
         kind='bar',
         ax=ax,
         figsize=(15,8),
-        title='{} values for different shifted hydrographs'.format(calib_metric[col].name.upper()),
+        title='{} values for different shifted hydrographs'.format(
+            calib_metric[col].name.upper()
+        ),
         ylabel='{}'.format(calib_metric[col].name.upper())
         )
-    fig.savefig(arg_output_dir + 'bar_chart_{}.png'.format(calib_metric[col].name.upper()))
+    fig.savefig(
+        arg_output_dir + 'bar_chart_{}.png'.format(calib_metric[col].name.upper())
+    )
 
-# %%
+
+# In[ ]:
+
 
 
 
